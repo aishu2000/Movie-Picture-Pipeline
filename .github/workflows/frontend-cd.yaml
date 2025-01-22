@@ -33,6 +33,7 @@ jobs:
         with:
           node-version: latest
           cache: 'npm'
+          cache-dependency-path: starter/frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -57,6 +58,7 @@ jobs:
         with:
           node-version: latest
           cache: 'npm'
+          cache-dependency-path: starter/frontend/package-lock.json
 
       - name: nstall dependencies
         run: npm ci

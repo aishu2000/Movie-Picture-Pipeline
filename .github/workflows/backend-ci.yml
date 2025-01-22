@@ -1,5 +1,5 @@
 # Workflow name
-name: Frontend Continuous Integration
+name: Backend Continuous Integration
 
 # Triggers for the workflow
 on:
@@ -11,6 +11,10 @@ on:
     branches:
       - main
 
+defaults:
+  run:
+    working-directory: starter/backend
+    
 # Jobs defined in the workflow
 jobs:
   lint:
@@ -22,20 +26,22 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
-      - name: Use Node.js
-        uses: actions/setup-node@v3
+      - name: Use Python
+        uses: actions/setup-python@v3
         with:
-          node-version: latest
-          cache: 'npm'
+          python-version: "3.10"
+          cache: "pip"
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          pip install pipenv
+          python -m pip install -r requirements.txt
 
-      - name: Run Lint
-        run: npm run lint
+      - name: Run lint
+        run: pipenv run lint
 
       - name: Print a message
-        run: echo "Hello, world!"
+        run: echo "Lint job completed"
 
   test:
     # The operating system for the runner
@@ -46,21 +52,23 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
-      - name: Use Node.js
-        uses: actions/setup-node@v3
+      - name: Use Python
+        uses: actions/setup-python@v3
         with:
-          node-version: latest
-          cache: 'npm'
+          python-version: "3.10"
+          cache: "pip"
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          pip install pipenv
+          python -m pip install -r requirements.txt
 
       - name: Run tests
-        run: npm test
+        run: pipenv run test
 
       - name: Print a message
-        run: echo "Hello, world!"
-      
+        run: echo "Test job completed"
+
   build:
     needs: [lint, test]
     # The operating system for the runner
@@ -72,9 +80,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build
-        env:
-          URL: ${{ vars.REACT_APP_MOVIE_API_URL }}
-        run: docker build --build-arg=REACT_APP_MOVIE_API_URL=$URL -t frontend:latest .
+        run: docker build -t backend:latest .
 
       - name: Print a message
         run: echo "Build completed"

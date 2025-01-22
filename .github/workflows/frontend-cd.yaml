@@ -13,6 +13,10 @@ on:
     branches:
     - main
 
+defaults:
+  run:
+    working-directory: starter/frontend
+
 # Jobs defined in the workflow
 jobs:
   lint:

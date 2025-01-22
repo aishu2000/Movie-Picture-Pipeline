@@ -13,8 +13,8 @@ on:
 
 defaults:
   run:
-    working-directory: starter/frontend
-    
+    working-directory: ./starter/frontend
+
 # Jobs defined in the workflow
 jobs:
   lint:

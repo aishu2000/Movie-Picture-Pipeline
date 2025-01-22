@@ -1,0 +1,80 @@
+# Workflow name
+name: Frontend Continuous Integration
+
+# Triggers for the workflow
+on:
+  # Manual trigger using the workflow_dispatch event
+  workflow_dispatch:
+
+  # Automatic trigger on pull request events targeting the main branch
+  pull_request:
+    branches:
+      - main
+
+# Jobs defined in the workflow
+jobs:
+  lint:
+    # The operating system for the runner
+    runs-on: ubuntu-latest
+
+    # Steps in the job
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: latest
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Lint
+        run: npm run lint
+
+      - name: Print a message
+        run: echo "Hello, world!"
+
+  test:
+    # The operating system for the runner
+    runs-on: ubuntu-latest
+
+    # Steps in the job
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: latest
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Print a message
+        run: echo "Hello, world!"
+      
+  build:
+    needs: [lint, test]
+    # The operating system for the runner
+    runs-on: ubuntu-latest
+
+    # Steps in the job
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Build
+        env:
+          URL: ${{ vars.REACT_APP_MOVIE_API_URL }}
+        run: docker build --build-arg=REACT_APP_MOVIE_API_URL=$URL -t frontend:latest .
+
+      - name: Print a message
+        run: echo "Build completed"

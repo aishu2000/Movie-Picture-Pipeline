@@ -1,0 +1,82 @@
+# Workflow name
+name: Backend Continuous Integration
+
+# Triggers for the workflow
+on:
+  # Manual trigger using the workflow_dispatch event
+  workflow_dispatch:
+
+  # Automatic trigger on pull request events targeting the main branch
+  pull_request:
+    branches:
+      - main
+
+# Jobs defined in the workflow
+jobs:
+  lint:
+    # The operating system for the runner
+    runs-on: ubuntu-latest
+
+    # Steps in the job
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Use Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          pip install pipenv
+          python -m pip install -r requirements.txt
+
+      - name: Run lint
+        run: pipenv run lint
+
+      - name: Print a message
+        run: echo "Lint job completed"
+
+  test:
+    # The operating system for the runner
+    runs-on: ubuntu-latest
+
+    # Steps in the job
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Use Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          pip install pipenv
+          python -m pip install -r requirements.txt
+
+      - name: Run tests
+        run: pipenv run test
+
+      - name: Print a message
+        run: echo "Test job completed"
+
+  build:
+    needs: [lint, test]
+    # The operating system for the runner
+    runs-on: ubuntu-latest
+
+    # Steps in the job
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Build
+        run: docker build -t backend:latest .
+
+      - name: Print a message
+        run: echo "Build completed"
